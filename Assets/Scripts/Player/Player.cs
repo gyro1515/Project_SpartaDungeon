@@ -21,6 +21,10 @@ public class Player : BaseCharacter
     public float CurStemina { get { return curStemina; } set { curStemina = Mathf.Clamp(value, 0f, maxStemina); } }
     public float MaxStemina { get { return maxStemina; } }
     public float SteminaPassive { get { return steminaPassive; } }
+    // 무적
+    bool isInvincible = false;
+    public bool IsInvincible { get { return isInvincible; } set { isInvincible = value; } }
+    // 드롭 위치
     public Transform DropPosition { get { return dropPosition; } }
     public float JumpPower { get { return jumpPower; } set { jumpPower = value; } }
     // 플레이어 컨트롤러
@@ -30,9 +34,9 @@ public class Player : BaseCharacter
     PlayerStateController stateController;
     public PlayerStateController StateController { get { return stateController; } }
     // 인벤토리 아이템 추가용 델리게이트
-    public delegate void AddItemAction(ItemData item);
-    AddItemAction addItem;
-    public AddItemAction AddItem { get { return addItem; } set { addItem = value; } }
+    //public delegate void AddItemAction(ItemData item);
+    Action<ItemData> addItem;
+    public Action<ItemData> AddItem { get { return addItem; } set { addItem = value; } }
 
     protected override void Awake()
     {

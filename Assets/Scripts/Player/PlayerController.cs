@@ -35,6 +35,9 @@ public class PlayerController : BaseController, IJumpable
     // IJumpable 상속
     public float JumpPower { get { return player?.JumpPower ?? 0f; } set {  if(player) player.JumpPower = value; } }
     public bool IsJump { get; set; } = false;
+    public int JumpCount { get; set; }
+    public int CurJumpCount { get; set; } // 현재 점프 가능 횟수
+
     // 점프 채크용 위치
     Vector3 jumpCheckPos = Vector3.zero;
     private float jumpJudgeTime = 0.1f; // 점프하자마자 collisionStay호출되는 이슈때문에 점프 판정 시간 두기
@@ -67,6 +70,9 @@ public class PlayerController : BaseController, IJumpable
         interactionAction.started += OnInteraction;
 
         objectInteraction = GetComponent<ObjectInteraction>();
+
+        JumpCount = 1; // 기본 점프 횟수 1회
+        CurJumpCount = JumpCount;
     }
     private void Start()
     {
@@ -124,7 +130,8 @@ public class PlayerController : BaseController, IJumpable
     void OnJump(InputAction.CallbackContext context)
     {
         //Debug.Log("OnJump");
-        if (IsJump) return;
+        //if (IsJump) return;
+        if (CurJumpCount <= 0) return; // 점프 가능 횟수가 없다면 리턴
         StartJump();
     }
     void OnInventory(InputAction.CallbackContext context)
@@ -155,6 +162,7 @@ public class PlayerController : BaseController, IJumpable
     public void StartJump() // IJumpable 상속
     {
         IsJump = true;
+        CurJumpCount--; // 점프 가능 횟수 감소
         _rigidbody.AddForce(Vector2.up * JumpPower, ForceMode.Impulse);
         lastJumpTime = Time.time;
     }
@@ -162,6 +170,7 @@ public class PlayerController : BaseController, IJumpable
     public void EndJump() // IJumpable 상속
     {
         IsJump = false;
+        CurJumpCount = JumpCount; // 점프 가능 횟수 초기화
     }
 
     void CheckLanding(Collision collision)

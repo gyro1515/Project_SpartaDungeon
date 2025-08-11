@@ -11,6 +11,8 @@ public interface IJumpable
 {
     public float JumpPower { get; set; }
     public bool IsJump { get; set; }
+    public int JumpCount { get; set; } // 점프 가능 횟수
+    public int CurJumpCount { get { return JumpCount; } set { JumpCount = value; } } // 현재 점프 가능 횟수
     void StartJump(); // 점프 시작
     void EndJump(); // 점프 앤드
 }

@@ -23,7 +23,7 @@ public class UIInventory : MonoBehaviour
     [SerializeField] GameObject dropButton;
 
     private PlayerController controller;
-    //private PlayerCondition condition;
+    private PlayerStateController stateController;
 
     private ItemSlot selectedItem;
     private int selectedItemIndex;
@@ -54,6 +54,7 @@ public class UIInventory : MonoBehaviour
     private void Start()
     {
         controller = GameManager.Instance.Player.Controller;
+        stateController = GameManager.Instance.Player.StateController;
         dropPosition = GameManager.Instance.Player.DropPosition;
 
         GameManager.Instance.Player.AddItem += AddItem;  // 아이템 파밍 시
@@ -203,9 +204,13 @@ public class UIInventory : MonoBehaviour
     {
         if (selectedItem.item.type == ItemType.Consumable)
         {
-            for (int i = 0; i < selectedItem.item.consumables.Length; i++)
+            stateController.ApplyConsumable(selectedItem.item);
+            /*for (int i = 0; i < selectedItem.item.consumables.Length; i++)
             {
-                switch (selectedItem.item.consumables[i].type)
+                // 스위치대신 딕셔너리로 처리해보기
+                stateController.ApplyConsumable(selectedItem.item.consumables[i]);
+
+                *//*switch (selectedItem.item.consumables[i].type)
                 {
                     case ConsumableType.Health:
                         //condition.Heal(selectedItem.item.consumables[i].value);
@@ -213,8 +218,8 @@ public class UIInventory : MonoBehaviour
                     case ConsumableType.Hunger:
                         //condition.Eat(selectedItem.item.consumables[i].value);
                         break;
-                }
-            }
+                }*//*
+            }*/
             RemoveSelctedItem();
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,9 +6,19 @@ using UnityEngine;
 public class PlayerStateController : MonoBehaviour, IDamagable
 {
     Player player;
+    private Dictionary<ConsumableType, Action<ItemDataConsumable>> effectHandlers;
     private void Awake()
     {
         player = GetComponent<Player>();
+        effectHandlers = new Dictionary<ConsumableType, Action<ItemDataConsumable>>
+        {
+            { ConsumableType.Health, AddHealth },
+            { ConsumableType.Stemena, AddStemena },
+            { ConsumableType.Hunger, AddHunger },
+            { ConsumableType.Speed, AddSpeed },
+            { ConsumableType.Invincibility, ApplyInvincibility },
+            { ConsumableType.DoubleJump, ApplyDoubleJump }
+        };
     }
     private void Update()
     {
@@ -29,5 +40,77 @@ public class PlayerStateController : MonoBehaviour, IDamagable
         UIManager.Instance.SetHungerBar(player.GetCurHungerRatio());
         player.CurStemina += player.SteminaPassive * Time.deltaTime; // 스테미나 증가
         UIManager.Instance.SetSteminaBar(player.GetCurSteminaRatio());
+    }
+    public void ApplyConsumable(ItemData itemData)
+    {
+        bool hasDuration = false;
+        foreach (var consumable in itemData.consumables)
+        {
+            if (!effectHandlers.TryGetValue(consumable.type, out var handler)) return;
+
+            handler.Invoke(consumable);
+            hasDuration = consumable.duration > 0; // 지속 시간이 있는지 확인
+        }
+        if (!hasDuration) return; // 지속 시간이 없는 경우는 여기서 종료
+        // 아이템 사용 아이콘 생성
+        UIManager.Instance.UsedItemUI.AddIcon(itemData); // 아이템 사용 아이콘 추가
+
+        // 아이콘과 실제 작용 동기화 필요, 오차 발생 가능성 있음 -> 갈아 엎어야 할 거 같으니 나중으로 미루기
+
+    }
+
+    private void AddHealth(ItemDataConsumable consumable)
+    {
+        player.CurHp += consumable.value;
+        UIManager.Instance.SetHpBar(player.GetCurHpRatio());
+    }
+    private void AddHunger(ItemDataConsumable consumable)
+    {
+        player.CurHunger += consumable.value;
+        UIManager.Instance.SetHungerBar(player.GetCurHungerRatio());
+    }
+    private void AddStemena(ItemDataConsumable consumable)
+    {
+        player.CurStemina += consumable.value;
+        UIManager.Instance.SetSteminaBar(player.GetCurSteminaRatio());
+
+    }
+    private void AddSpeed(ItemDataConsumable consumable)
+    {
+        StartCoroutine(SpeedBuffRoutine(consumable.value, consumable.duration));
+    }
+
+    private IEnumerator SpeedBuffRoutine(float value, float duration)
+    {
+        float originalWalkSpeed = player.WalkSpeed;
+        float originalRunSpeed = player.RunSpeed;
+        player.WalkSpeed *= value;
+        player.RunSpeed *= value;
+        yield return new WaitForSeconds(duration);
+        player.WalkSpeed = originalWalkSpeed;
+        player.RunSpeed = originalRunSpeed;
+    }
+    void ApplyInvincibility(ItemDataConsumable consumable)
+    {
+        StartCoroutine(InvincibilityRoutine(consumable.duration));
+    }
+    private IEnumerator InvincibilityRoutine(float duration)
+    {
+        player.IsInvincible = true;
+        yield return new WaitForSeconds(duration);
+        player.IsInvincible = false;
+    }
+    void ApplyDoubleJump(ItemDataConsumable consumable)
+    {
+        StartCoroutine(DoubleJumpRoutine(consumable.duration));
+    }
+    private IEnumerator DoubleJumpRoutine(float duration)
+    {
+        int originalJumpCount = player.Controller.JumpCount;
+        player.Controller.JumpCount = 2;
+        player.Controller.CurJumpCount = player.Controller.JumpCount - (originalJumpCount - player.Controller.CurJumpCount); // 현재 점프 가능 횟수 갱신
+        yield return new WaitForSeconds(duration);
+        Debug.Log("JumpEnd");
+        player.Controller.JumpCount = originalJumpCount;
     }
 }

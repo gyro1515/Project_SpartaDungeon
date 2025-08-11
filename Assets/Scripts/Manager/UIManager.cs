@@ -7,7 +7,9 @@ public class UIManager : SingletonMono<UIManager>
     [Header("UI 매니저 설정")]
     [SerializeField] private GameObject objectPanels;
     [SerializeField] private HUDUI hudUI;
+    [SerializeField] private UsedItemUI usedItemUI;
     public HUDUI HUDUI { get { return hudUI; } set { hudUI = value; } }
+    public UsedItemUI UsedItemUI { get { return usedItemUI; } set { usedItemUI = value; } }
     // 오브젝트 UI
     //private List<ObjectUI> objectUIs = new List<ObjectUI>();
     GameObject objectUIPrefab = null;

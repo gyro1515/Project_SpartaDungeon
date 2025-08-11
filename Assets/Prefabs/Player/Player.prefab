@@ -197,7 +197,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 2039
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -259,7 +259,7 @@ GameObject:
   - component: {fileID: 6780088211774435672}
   - component: {fileID: 4580818250660742440}
   - component: {fileID: 2343277844438315441}
-  m_Layer: 6
+  m_Layer: 11
   m_Name: CharacterMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -385,11 +385,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 100
+  hpPassive: 5
   atkPower: 10
   defPower: 10
   walkSpeed: 5
   runSpeed: 10
   jumpPower: 400
+  maxHunger: 100
+  hungerPassive: 3
+  maxStemina: 100
+  steminaPassive: 5
   dropPosition: {fileID: 9171026695368156713}
 --- !u!114 &4893372663500989066
 MonoBehaviour:
