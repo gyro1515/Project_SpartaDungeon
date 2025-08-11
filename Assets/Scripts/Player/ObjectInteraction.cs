@@ -13,6 +13,9 @@ public class ObjectInteraction : MonoBehaviour
 
     private Camera _camera;
 
+    private IInteractable selectedItem;
+    public IInteractable SelectedItem { get { return selectedItem; } }
+
     void Start()
     {
         _camera = Camera.main;
@@ -29,10 +32,21 @@ public class ObjectInteraction : MonoBehaviour
         RaycastHit hit;
         // 이렇게 지정도 가능 시작위치, 방향
         //Physics.Raycast(new Vector3(), Vector3.back, out hit, 1000f, layerMask);
-        if (!Physics.Raycast(ray, out hit, maxCheckDistance, layerMask)) return;
+        if (Physics.Raycast(ray, out hit, maxCheckDistance, layerMask))
+        {
+            // 오브젝트 패널 활성화
+            hit.collider.GetComponent<Object>()?.SetActive(true);
 
-        hit.collider.GetComponent<Object>()?.SetActive(true);
-
+            // 아이템 얻기 패널 활성화
+            selectedItem = hit.collider.GetComponent<IInteractable>();
+            if (selectedItem != null) UIManager.Instance.SetGainItemPanelActive(true);
+        }
+        else
+        {
+            // 아이템 얻기 패널 비활성화
+            selectedItem = null;
+            UIManager.Instance.SetGainItemPanelActive(false);
+        }
     }
 
     

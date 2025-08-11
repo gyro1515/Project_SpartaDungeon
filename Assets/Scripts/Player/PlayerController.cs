@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
 
-public class PlayerController : BaseController, IJumpable, IDamagable
+public class PlayerController : BaseController, IJumpable
 {
     [Header("카메라 세팅")]
     [SerializeField] Transform cameraContainer;
@@ -18,12 +20,17 @@ public class PlayerController : BaseController, IJumpable, IDamagable
 
     Player player;
     CapsuleCollider col;
+    Action inventory;
+    ObjectInteraction objectInteraction;
+
     // 인풋 -> 인스펙터 창보다에서 연결하는게 생각보다 더 귀찮아서...
     private PlayerInput playerInput;  
     private InputActionMap mainActionMap; 
     private InputAction moveAction; 
     private InputAction LookAction; 
     private InputAction jumpAction;
+    private InputAction inventoryAction;
+    private InputAction interactionAction;
 
     // IJumpable 상속
     public float JumpPower { get { return player?.JumpPower ?? 0f; } set {  if(player) player.JumpPower = value; } }
@@ -38,7 +45,6 @@ public class PlayerController : BaseController, IJumpable, IDamagable
         Cursor.lockState = CursorLockMode.Locked; // 마우스 가운데로 잠그고 안보이게 하기
         
         player = GetComponent<Player>();
-        //JumpPower = player.JumpPower;
         col = GetComponent<CapsuleCollider>();
         // 점프 체크용 포지션, 캡슐 콜라이더는 아래가 둥글기 때문에 경사가 있는 길도 올라 갈수 있다.
         // 따라서 점프하고 착지한 바닥이 플레이어 위치 바로 아래가 아닐 가능성이 있기때문에 jumpCheckPos로 보정을 했다.
@@ -55,14 +61,22 @@ public class PlayerController : BaseController, IJumpable, IDamagable
         LookAction.canceled += OnLookStop;
         jumpAction = mainActionMap.FindAction("Jump");
         jumpAction.started += OnJump; // 키가 눌렸을 때
+        inventoryAction = mainActionMap.FindAction("Inventory");
+        inventoryAction.started += OnInventory;
+        interactionAction = mainActionMap.FindAction("Interaction");
+        interactionAction.started += OnInteraction;
 
-        
+        objectInteraction = GetComponent<ObjectInteraction>();
     }
-    private void Update()
+    private void Start()
     {
-        // 테스트 용도
-        if (Input.GetKeyDown(KeyCode.F)) TakeDamage(10);
+        // Action 호출 시 필요한 함수 등록
+        inventory += UIManager.Instance.InventoryToggle; // inventory 키 입력 시
     }
+    /*private void Update()
+    {
+        
+    }*/
     private void FixedUpdate()
     {
         Move();
@@ -113,6 +127,22 @@ public class PlayerController : BaseController, IJumpable, IDamagable
         if (IsJump) return;
         StartJump();
     }
+    void OnInventory(InputAction.CallbackContext context)
+    {
+        inventory?.Invoke(); // 인벤토리 열기/닫기
+        ToggleCursor(); // 인벤토리 열면 카메라 회전 안되게
+    }
+    void ToggleCursor()
+    {
+        bool toggle = Cursor.lockState == CursorLockMode.Locked;
+        Cursor.lockState = toggle ? CursorLockMode.None : CursorLockMode.Locked;
+        canLook = !toggle;
+    }
+    void OnInteraction(InputAction.CallbackContext context)
+    {
+        if (objectInteraction.SelectedItem == null) return; // 선택된 아이템이 없다면 리턴
+        objectInteraction.SelectedItem.OnInteract(); // 선택된 아이템의 OnInteract 호출
+    }
     void Move()
     {
         Vector3 dir = transform.forward * curMovementInput.z + transform.right * curMovementInput.x; // 실제 축처럼 z가 앞을 향하도록
@@ -134,11 +164,6 @@ public class PlayerController : BaseController, IJumpable, IDamagable
         IsJump = false;
     }
 
-    public void TakeDamage(int damage) // IDamagable 상속
-    {
-        player.CurHp -= damage;
-        UIManager.Instance.SetHpBar(player.GetCurHpRatio());
-    }
     void CheckLanding(Collision collision)
     {
         if(!IsJump) return; // 점프시에만 체크

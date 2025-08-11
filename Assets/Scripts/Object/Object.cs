@@ -5,22 +5,19 @@ using UnityEngine;
 public class Object : MonoBehaviour
 {
     [Header("오브젝트 설정")]
-    [SerializeField] ObjectData objectData;
-    ObjectUI onjectUI;
+    [SerializeField] protected ObjectData objectData;
 
-    private void Awake()
-    {
-        onjectUI = GetComponentInChildren<ObjectUI>(true); // 활성화 안된 것도 가져오기
-        SetText();
-    }
+    protected ObjectUI objectUI = null;
+    public ObjectUI ObjectUI { get { return objectUI; } }
 
-    void SetText()
+
+    private void Start()
     {
-        onjectUI.SetdescriptionText(objectData.description);
-        onjectUI.SetNameText(objectData.name);
+        objectUI = UIManager.Instance.AddObjectUI(objectData, this);
     }
     public void SetActive(bool active)
     {
-        onjectUI.SetActive(active);
+        if (objectUI == null) return;
+        objectUI.SetActive(active);
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IDamagable
 {
-    void TakeDamage(int damage); // 데미지 주기
+    void TakeDamage(float damage); // 데미지 주기
 }
 
 public interface IJumpable
@@ -23,4 +23,9 @@ public interface IObjectInteractable
 {
     public string GetName(); // 이름 세팅하기
     public string GetDescription(); // 설명 세팅하기
+}
+public interface IInteractable
+{
+    //public string GetInteractPrompt();
+    public void OnInteract();
 }

@@ -343,12 +343,13 @@ GameObject:
   - component: {fileID: 8996958511932945108}
   - component: {fileID: 4893372663500989066}
   - component: {fileID: 3524456703258936933}
+  - component: {fileID: 5774272518054240594}
   - component: {fileID: 2693593965849061192}
   - component: {fileID: 6986091877645680487}
   - component: {fileID: 6200343910605479297}
   m_Layer: 6
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -389,6 +390,7 @@ MonoBehaviour:
   walkSpeed: 5
   runSpeed: 10
   jumpPower: 400
+  dropPosition: {fileID: 9171026695368156713}
 --- !u!114 &4893372663500989066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -422,6 +424,18 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 1024
+--- !u!114 &5774272518054240594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9021455727396116524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dab973dfdd0b694da83a6c8626de342, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!136 &2693593965849061192
 CapsuleCollider:
   m_ObjectHideFlags: 0
