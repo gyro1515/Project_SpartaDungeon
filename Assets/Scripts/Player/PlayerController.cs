@@ -32,6 +32,7 @@ public class PlayerController : BaseController, IJumpable
     private InputAction jumpAction;
     private InputAction inventoryAction;
     private InputAction interactionAction;
+    private InputAction dashAction;
 
     // IJumpable 상속
     public float JumpPower { get { return player?.JumpPower ?? 0f; } set {  if(player) player.JumpPower = value; } }
@@ -70,6 +71,9 @@ public class PlayerController : BaseController, IJumpable
         inventoryAction.started += OnInventory;
         interactionAction = mainActionMap.FindAction("Interaction");
         interactionAction.started += OnInteraction;
+        dashAction = mainActionMap.FindAction("Dash");
+        dashAction.started += OnDash;
+        dashAction.canceled += OnFinishDash;
 
         objectInteraction = GetComponent<ObjectInteraction>();
 
@@ -131,8 +135,6 @@ public class PlayerController : BaseController, IJumpable
     }
     void OnJump(InputAction.CallbackContext context)
     {
-        //Debug.Log("OnJump");
-        //if (IsJump) return;
         StartJump();
     }
     void OnInventory(InputAction.CallbackContext context)
@@ -151,10 +153,21 @@ public class PlayerController : BaseController, IJumpable
         if (objectInteraction.SelectedItem == null) return; // 선택된 아이템이 없다면 리턴
         objectInteraction.SelectedItem.OnInteract(); // 선택된 아이템의 OnInteract 호출
     }
+    void OnDash(InputAction.CallbackContext context)
+    {
+        if (player.CurStemina <= 0) return; // 스테미나가 없다면 리턴
+        Debug.Log("대쉬 시작");
+        player.IsDashing = true; // 대쉬 시작
+    }
+    void OnFinishDash(InputAction.CallbackContext context)
+    {
+        Debug.Log("대쉬 끝");
+        player.IsDashing = false;
+    }
     void Move()
     {
         Vector3 dir = transform.forward * curMovementInput.z + transform.right * curMovementInput.x; // 실제 축처럼 z가 앞을 향하도록
-        dir *= player.WalkSpeed;  
+        dir *= player.IsDashing? player.RunSpeed : player.WalkSpeed;  
         dir.y = _rigidbody.velocity.y;  // y값은 velocity(변화량)의 y 값을 넣어준다.
 
         _rigidbody.velocity = dir;
