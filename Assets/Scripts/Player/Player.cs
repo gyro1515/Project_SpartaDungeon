@@ -34,6 +34,9 @@ public class Player : BaseCharacter
     // 1인칭 여부
     bool isFirstPerson = true;
     public bool IsFirstPerson { get { return isFirstPerson; } set { isFirstPerson = value; } }
+    // 벽타기 여부
+    bool isClimbing = false;
+    public bool IsClimbing { get { return isClimbing; } set { isClimbing = value; } }
     // 드롭 위치
     public Transform DropPosition { get { return dropPosition; } }
     public float JumpPower { get { return jumpPower; } set { jumpPower = value; } }

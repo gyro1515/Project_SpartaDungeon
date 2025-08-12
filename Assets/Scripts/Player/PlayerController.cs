@@ -51,6 +51,8 @@ public class PlayerController : BaseController, IJumpable
     private float lastJumpTime = -999f;
     // 대시시 캐릭터 색 변경용
     MeshRenderer meshRenderer;
+    // 벽타기
+    Climb climb;
     protected override void Awake()
     {
         base.Awake();
@@ -92,26 +94,20 @@ public class PlayerController : BaseController, IJumpable
         meshRenderer = GetComponentInChildren<MeshRenderer>();
         cam = Camera.main; // 카메라 컴포넌트 가져오기
         perspectiveShift = GetComponent<PerspectiveShift>();
+        climb = GetComponent<Climb>();
     }
     private void Start()
     {
         // Action 호출 시 필요한 함수 등록
         inventory += UIManager.Instance.InventoryToggle; // inventory 키 입력 시
     }
-    /*private void Update()
-    {
-        
-    }*/
     private void FixedUpdate()
     {
         Move();
     }
     private void LateUpdate()
     {
-        if (canLook)
-        {
-            CameraLook();
-        }
+        CameraLook();
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -123,11 +119,16 @@ public class PlayerController : BaseController, IJumpable
     }
     void CameraLook()
     {
+        if (!canLook) return;
         camCurXRot += mouseDelta.y * lookSensitivity;
         camCurXRot = Mathf.Clamp(camCurXRot, minXLook, maxXLook);
-        cameraContainerFirst.localEulerAngles = new Vector3(-camCurXRot, 0, 0);
+        cameraContainerFirst.localEulerAngles = new Vector3(-camCurXRot, cameraContainerFirst.localEulerAngles.y, 0);
 
-        transform.eulerAngles += new Vector3(0, mouseDelta.x * lookSensitivity, 0);
+        if(player.IsClimbing) // 벽타기 중에는 카메라 회전만
+        {
+            cameraContainerFirst.localEulerAngles = new Vector3(cameraContainerFirst.localEulerAngles.x, cameraContainerFirst.localEulerAngles.y + mouseDelta.x * lookSensitivity, 0);
+        }
+        else transform.eulerAngles += new Vector3(0, mouseDelta.x * lookSensitivity, 0);
     }
     void OnMove(InputAction.CallbackContext context)
     {
@@ -148,6 +149,9 @@ public class PlayerController : BaseController, IJumpable
     }
     void OnJump(InputAction.CallbackContext context)
     {
+        if (climb.CheckWallAndClimb()) return; // 벽타기 먼저 체크
+
+        // 앞에 벽이 없다면 점프 시작
         StartJump();
     }
     void OnInventory(InputAction.CallbackContext context)
@@ -187,10 +191,19 @@ public class PlayerController : BaseController, IJumpable
     }
     void Move()
     {
-        Vector3 dir = transform.forward * curMovementInput.z + transform.right * curMovementInput.x; // 실제 축처럼 z가 앞을 향하도록
-        dir *= player.IsDashing? player.RunSpeed : player.WalkSpeed;  
-        dir.y = _rigidbody.velocity.y;  // y값은 velocity(변화량)의 y 값을 넣어준다.
-
+        Vector3 dir = Vector3.zero; // 초기화
+        if (player.IsClimbing)
+        {
+            dir = transform.up * curMovementInput.z + transform.right * curMovementInput.x; // forward 대신 up을 사용하여 벽타기 시 위쪽으로 이동
+            float climbRunSpeed = player.RunSpeed / player.WalkSpeed * climb.ClimbSpeed;
+            dir *= player.IsDashing ? climbRunSpeed : climb.ClimbSpeed;
+        }
+        else
+        {
+            dir = transform.forward * curMovementInput.z + transform.right * curMovementInput.x; // 실제 축처럼 z가 앞을 향하도록
+            dir *= player.IsDashing ? player.RunSpeed : player.WalkSpeed;
+            dir.y = _rigidbody.velocity.y;  // y값은 velocity(변화량)의 y 값을 넣어준다.
+        }
         _rigidbody.velocity = dir;
     }
 
@@ -200,7 +213,7 @@ public class PlayerController : BaseController, IJumpable
         if(player.CurStemina <= 0) return; // 스테미나가 없다면 리턴
         IsJump = true;
         CurJumpCount--; // 점프 가능 횟수 감소
-        _rigidbody.AddForce(Vector2.up * JumpPower, ForceMode.Impulse);
+        _rigidbody.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
         lastJumpTime = Time.time;
         
         stateController.AddStemina(-player.JumpStemina); // 점프 시 스테미나 감소

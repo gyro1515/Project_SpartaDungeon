@@ -190,6 +190,9 @@ public class UIInventory : MonoBehaviour
 
         for (int i = 0; i < selectedItem.item.consumables.Length; i++)
         {
+            if (selectedItem.item.consumables[i].type != ConsumableType.Health ||
+                selectedItem.item.consumables[i].type != ConsumableType.Stemena ||
+                selectedItem.item.consumables[i].type != ConsumableType.Hunger) continue; // 소비 아이템이 아닌 경우는 표시하지 않음
             selectedItemStatName.text += selectedItem.item.consumables[i].type.ToString() + "\n";
             selectedItemStatValue.text += selectedItem.item.consumables[i].value.ToString() + "\n";
         }

@@ -229,7 +229,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 2039
+    m_Bits: 6135
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -376,6 +376,7 @@ GameObject:
   - component: {fileID: 4893372663500989066}
   - component: {fileID: 7659874881336942406}
   - component: {fileID: 3524456703258936933}
+  - component: {fileID: 5723908562625337424}
   - component: {fileID: 5774272518054240594}
   - component: {fileID: 2693593965849061192}
   - component: {fileID: 6986091877645680487}
@@ -479,6 +480,22 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 1024
+--- !u!114 &5723908562625337424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9021455727396116524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed9ac1f8f74ed284a9cfd3d6251591d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  climbSpeed: 2
+  baseCameraContainer: {fileID: 4994184570091438534}
+  climbJumpPower: 350
+  foreMode: 1
 --- !u!114 &5774272518054240594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -498,7 +515,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9021455727396116524}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 9fe5a002be036644cb853df975233b2e, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
