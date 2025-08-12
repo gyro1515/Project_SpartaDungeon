@@ -27,11 +27,11 @@ public class HUDUI : MonoBehaviour
     }
     public void SetHungerBar(float value)
     {
-        if (hungerBar) hpBar.fillAmount = value;
+        if (hungerBar) hungerBar.fillAmount = value;
     }
     public void SetSteminaBar(float value)
     {
-        if (steminaBar) hpBar.fillAmount = value;
+        if (steminaBar) steminaBar.fillAmount = value;
     }
     public void SetGainItemPanelActive(bool active)
     {

@@ -392,7 +392,7 @@ MonoBehaviour:
   runSpeed: 10
   jumpPower: 400
   maxHunger: 100
-  hungerPassive: 3
+  hungerPassive: 0.5
   maxStemina: 100
   steminaPassive: 5
   dropPosition: {fileID: 9171026695368156713}

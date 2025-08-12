@@ -7,12 +7,14 @@ public class Player : BaseCharacter
 {
     [Header("플레이어 설정")]
     [SerializeField] float jumpPower = 80f;
+    [SerializeField] float jumpStemina = 20f;
     [SerializeField] float maxHunger = 100f;
     [SerializeField] float hungerPassive = 3f;
     [SerializeField] float maxStemina = 100f;
     [SerializeField] float steminaPassive = 5f;
     [SerializeField] Transform dropPosition;
 
+    public float JumpStemina { get { return jumpStemina; } }
     float curHunger = 0f;
     public float CurHunger { get { return curHunger; } set { curHunger = Mathf.Clamp(value, 0f, maxHunger); } }
     public float MaxHunger { get { return maxHunger; } }

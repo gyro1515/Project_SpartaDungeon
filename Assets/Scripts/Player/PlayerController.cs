@@ -19,6 +19,7 @@ public class PlayerController : BaseController, IJumpable
     bool canLook = true; // 인벤토리 온/오프 시 카메라 회전 용도
 
     Player player;
+    PlayerStateController stateController;
     CapsuleCollider col;
     Action inventory;
     ObjectInteraction objectInteraction;
@@ -48,6 +49,7 @@ public class PlayerController : BaseController, IJumpable
         Cursor.lockState = CursorLockMode.Locked; // 마우스 가운데로 잠그고 안보이게 하기
         
         player = GetComponent<Player>();
+        stateController = GetComponent<PlayerStateController>();
         col = GetComponent<CapsuleCollider>();
         // 점프 체크용 포지션, 캡슐 콜라이더는 아래가 둥글기 때문에 경사가 있는 길도 올라 갈수 있다.
         // 따라서 점프하고 착지한 바닥이 플레이어 위치 바로 아래가 아닐 가능성이 있기때문에 jumpCheckPos로 보정을 했다.
@@ -131,7 +133,6 @@ public class PlayerController : BaseController, IJumpable
     {
         //Debug.Log("OnJump");
         //if (IsJump) return;
-        if (CurJumpCount <= 0) return; // 점프 가능 횟수가 없다면 리턴
         StartJump();
     }
     void OnInventory(InputAction.CallbackContext context)
@@ -161,10 +162,14 @@ public class PlayerController : BaseController, IJumpable
 
     public void StartJump() // IJumpable 상속
     {
+        if (CurJumpCount <= 0) return; // 점프 가능 횟수가 없다면 리턴
+        if(player.CurStemina <= 0) return; // 스테미나가 없다면 리턴
         IsJump = true;
         CurJumpCount--; // 점프 가능 횟수 감소
         _rigidbody.AddForce(Vector2.up * JumpPower, ForceMode.Impulse);
         lastJumpTime = Time.time;
+        
+        stateController.AddStemina(-player.JumpStemina); // 점프 시 스테미나 감소
     }
 
     public void EndJump() // IJumpable 상속

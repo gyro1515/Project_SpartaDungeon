@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerStateController : MonoBehaviour, IDamagable
 {
     Player player;
-    private Dictionary<ConsumableType, Action<ItemDataConsumable>> effectHandlers;
+    private Dictionary<ConsumableType, Action<ItemDataConsumable>> effectHandlers; // 소비 아이템 처리용
     private void Awake()
     {
         player = GetComponent<Player>();
@@ -29,6 +29,7 @@ public class PlayerStateController : MonoBehaviour, IDamagable
     }
     public void TakeDamage(float damage) // IDamagable 상속
     {
+        if(player.IsInvincible) return; // 무적 상태면 데미지 받지 않음
         player.CurHp -= damage;
         UIManager.Instance.SetHpBar(player.GetCurHpRatio());
     }
@@ -75,6 +76,11 @@ public class PlayerStateController : MonoBehaviour, IDamagable
         UIManager.Instance.SetSteminaBar(player.GetCurSteminaRatio());
 
     }
+    public void AddStemina(float value) // 스테미나 증가 메소드, 외부에서 호출 가능
+    {
+        player.CurStemina += value;
+        UIManager.Instance.SetSteminaBar(player.GetCurSteminaRatio());
+    }
     private void AddSpeed(ItemDataConsumable consumable)
     {
         StartCoroutine(SpeedBuffRoutine(consumable.value, consumable.duration));
@@ -110,7 +116,6 @@ public class PlayerStateController : MonoBehaviour, IDamagable
         player.Controller.JumpCount = 2;
         player.Controller.CurJumpCount = player.Controller.JumpCount - (originalJumpCount - player.Controller.CurJumpCount); // 현재 점프 가능 횟수 갱신
         yield return new WaitForSeconds(duration);
-        Debug.Log("JumpEnd");
         player.Controller.JumpCount = originalJumpCount;
     }
 }
