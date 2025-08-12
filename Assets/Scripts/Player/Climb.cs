@@ -36,7 +36,7 @@ public class Climb : MonoBehaviour
             Debug.DrawLine(playerTransform.position + playerTransform.up * col.height / 2, 
                 playerTransform.position + playerTransform.up * col.height / 2 + playerTransform.forward * (col.radius + 0.1f), 
                 Color.green, 1.0f);
-            Debug.Log("벽 위로 점프");
+            //Debug.Log("벽 위로 점프");
 
             // 플레이어 위치에는 벽이 있고 위쪽에 벽이 없다면 점프하여 벽 위로 올라가기
             playerRb.AddForce((playerTransform.up + playerTransform.forward) * col.height * climbJumpPower, foreMode);
@@ -44,7 +44,7 @@ public class Climb : MonoBehaviour
         }
         else
         {
-            Debug.Log("벽이 없습니다. 벽타기 중지.");
+            //Debug.Log("벽이 없습니다. 벽타기 중지.");
             // 벽이 없으면 벽타기 중지
             FinishClimb();
         }
@@ -69,7 +69,7 @@ public class Climb : MonoBehaviour
         player.IsClimbing = true; // 벽타기 상태로 변경
         playerRb.useGravity = false; // 중력 비활성화
         playerRb.velocity = Vector3.zero; // 벽타기 시작 시 속도 초기화
-        Debug.Log("벽타기 시작");
+        //Debug.Log("벽타기 시작");
         return true;
     }
     void FinishClimb()

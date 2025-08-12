@@ -49,6 +49,7 @@ public class PlayerController : BaseController, IJumpable
     Vector3 jumpCheckPos = Vector3.zero;
     private float jumpJudgeTime = 0.1f; // 점프하자마자 collisionStay호출되는 이슈때문에 점프 판정 시간 두기
     private float lastJumpTime = -999f;
+    LayerMask jumpableMask;
     // 대시시 캐릭터 색 변경용
     MeshRenderer meshRenderer;
     // 벽타기
@@ -90,6 +91,7 @@ public class PlayerController : BaseController, IJumpable
 
         JumpCount = 1; // 기본 점프 횟수 1회
         CurJumpCount = JumpCount;
+        jumpableMask = LayerMask.GetMask("Terrain", "Wall"); // 점프 가능한 레이어 설정
 
         meshRenderer = GetComponentInChildren<MeshRenderer>();
         cam = Camera.main; // 카메라 컴포넌트 가져오기
@@ -230,7 +232,7 @@ public class PlayerController : BaseController, IJumpable
         if(!IsJump) return; // 점프시에만 체크
         if (Time.time - lastJumpTime < jumpJudgeTime) return; // 점프 판정 시간이 안 지났다면 리턴
 
-        if ((1 << collision.gameObject.layer & LayerMask.GetMask("Terrain")) == 0) return; // 터레인이 아니면 리턴
+        if ((1 << collision.gameObject.layer & jumpableMask) == 0) return; // 터레인, 벽이 아니면 리턴
 
         // 점프 종료 체크
         ContactPoint[] contacts = new ContactPoint[collision.contactCount];

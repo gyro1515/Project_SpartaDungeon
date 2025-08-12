@@ -36,11 +36,17 @@ public class ObjectInteraction : MonoBehaviour
         if (Physics.Raycast(ray, out hit, maxCheckDistance, layerMask))
         {
             // 오브젝트 패널 활성화
-            hit.collider.GetComponent<Object>()?.SetActive(true);
-
+            Object obj = hit.collider.GetComponent<Object>();
+            if(obj) obj.SetActive(true);
+            else
+            {
+                hit.collider.GetComponentInParent<Object>()?.SetActive(true);
+            }
+            //Debug.Log($"Hit: {hit.collider.name}");
             // 아이템 얻기 패널 활성화
             selectedItem = hit.collider.GetComponent<IInteractable>();
             if (selectedItem != null) UIManager.Instance.SetGainItemPanelActive(true);
+            else UIManager.Instance.SetGainItemPanelActive(false);
         }
         else
         {
