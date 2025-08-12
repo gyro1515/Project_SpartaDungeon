@@ -29,6 +29,7 @@ public class ObjectInteraction : MonoBehaviour
         checkTimer -= checkRate; // 좀 더 정확한 시간 간격이 되게끔
 
         Ray ray = _camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+        Debug.DrawRay(ray.origin, ray.direction * maxCheckDistance, Color.red, 0.5f); // 레이캐스트 시각화
         RaycastHit hit;
         // 이렇게 지정도 가능 시작위치, 방향
         //Physics.Raycast(new Vector3(), Vector3.back, out hit, 1000f, layerMask);

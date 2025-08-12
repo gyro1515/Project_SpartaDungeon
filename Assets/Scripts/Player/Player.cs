@@ -31,6 +31,9 @@ public class Player : BaseCharacter
     // 대쉬 여부
     bool isDashing = false;
     public bool IsDashing { get { return isDashing; } set { isDashing = value; } }
+    // 1인칭 여부
+    bool isFirstPerson = true;
+    public bool IsFirstPerson { get { return isFirstPerson; } set { isFirstPerson = value; } }
     // 드롭 위치
     public Transform DropPosition { get { return dropPosition; } }
     public float JumpPower { get { return jumpPower; } set { jumpPower = value; } }

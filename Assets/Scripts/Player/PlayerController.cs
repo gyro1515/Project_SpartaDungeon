@@ -8,7 +8,8 @@ using UnityEngine.InputSystem.XR;
 public class PlayerController : BaseController, IJumpable
 {
     [Header("카메라 세팅")]
-    [SerializeField] Transform cameraContainer;
+    [SerializeField] Transform cameraContainerFirst;
+    //[SerializeField] Transform cameraContainerThird;
     [SerializeField] float minXLook;  // 최소 시야각
     [SerializeField] float maxXLook;  // 최대 시야각
     [SerializeField] float lookSensitivity; // 카메라 민감도
@@ -17,12 +18,15 @@ public class PlayerController : BaseController, IJumpable
     private Vector3 curMovementInput;  // 현재 입력 값 -> 게임 축과 똑같게 Vector3로 바꿈
     private Vector2 mouseDelta;  // 마우스 변화
     bool canLook = true; // 인벤토리 온/오프 시 카메라 회전 용도
+    Camera cam;
 
     Player player;
     PlayerStateController stateController;
     CapsuleCollider col;
     Action inventory;
     ObjectInteraction objectInteraction;
+    public ObjectInteraction ObjectInteraction { get { return objectInteraction; } }
+    PerspectiveShift perspectiveShift;
 
     // 인풋 -> 인스펙터 창보다에서 연결하는게 생각보다 더 귀찮아서...
     private PlayerInput playerInput;  
@@ -33,6 +37,7 @@ public class PlayerController : BaseController, IJumpable
     private InputAction inventoryAction;
     private InputAction interactionAction;
     private InputAction dashAction;
+    private InputAction PerspectiveShiftAction;
 
     // IJumpable 상속
     public float JumpPower { get { return player?.JumpPower ?? 0f; } set {  if(player) player.JumpPower = value; } }
@@ -44,6 +49,8 @@ public class PlayerController : BaseController, IJumpable
     Vector3 jumpCheckPos = Vector3.zero;
     private float jumpJudgeTime = 0.1f; // 점프하자마자 collisionStay호출되는 이슈때문에 점프 판정 시간 두기
     private float lastJumpTime = -999f;
+    // 대시시 캐릭터 색 변경용
+    MeshRenderer meshRenderer;
     protected override void Awake()
     {
         base.Awake();
@@ -74,11 +81,17 @@ public class PlayerController : BaseController, IJumpable
         dashAction = mainActionMap.FindAction("Dash");
         dashAction.started += OnDash;
         dashAction.canceled += OnFinishDash;
+        PerspectiveShiftAction = mainActionMap.FindAction("PerspectiveShift");
+        PerspectiveShiftAction.started += OnPerspectiveShift;
 
         objectInteraction = GetComponent<ObjectInteraction>();
 
         JumpCount = 1; // 기본 점프 횟수 1회
         CurJumpCount = JumpCount;
+
+        meshRenderer = GetComponentInChildren<MeshRenderer>();
+        cam = Camera.main; // 카메라 컴포넌트 가져오기
+        perspectiveShift = GetComponent<PerspectiveShift>();
     }
     private void Start()
     {
@@ -112,7 +125,7 @@ public class PlayerController : BaseController, IJumpable
     {
         camCurXRot += mouseDelta.y * lookSensitivity;
         camCurXRot = Mathf.Clamp(camCurXRot, minXLook, maxXLook);
-        cameraContainer.localEulerAngles = new Vector3(-camCurXRot, 0, 0);
+        cameraContainerFirst.localEulerAngles = new Vector3(-camCurXRot, 0, 0);
 
         transform.eulerAngles += new Vector3(0, mouseDelta.x * lookSensitivity, 0);
     }
@@ -156,13 +169,21 @@ public class PlayerController : BaseController, IJumpable
     void OnDash(InputAction.CallbackContext context)
     {
         if (player.CurStemina <= 0) return; // 스테미나가 없다면 리턴
-        Debug.Log("대쉬 시작");
+        //Debug.Log("대쉬 시작");
         player.IsDashing = true; // 대쉬 시작
+        meshRenderer.material.color = Color.red; // 대쉬 중일 때 색상 변경
+
     }
     void OnFinishDash(InputAction.CallbackContext context)
     {
-        Debug.Log("대쉬 끝");
+        //Debug.Log("대쉬 끝");
         player.IsDashing = false;
+        meshRenderer.material.color = Color.white; // 대쉬 중일 때 색상 변경
+
+    }
+    void OnPerspectiveShift(InputAction.CallbackContext context)
+    {
+        perspectiveShift.ChangePerspective();
     }
     void Move()
     {

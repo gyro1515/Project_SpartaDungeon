@@ -17,9 +17,12 @@ public class ObjectUI : MonoBehaviour
     Player player = null;
     Vector3 uIPos = Vector3.zero;
     Vector3 screenPos = Vector3.zero;
-    private void Awake()
+    /*private void Awake()
     {
         //rectTransform = GetComponent<RectTransform>();
+    }*/
+    private void Start()
+    {
         player = GameManager.Instance.Player;
     }
 
@@ -30,7 +33,7 @@ public class ObjectUI : MonoBehaviour
         SetUIPos();
         activeTimer += Time.deltaTime;
         if (activeTimer >= activeTime || 
-            Vector3.Distance(cam.gameObject.transform.position, targetObject.gameObject.transform.position) > 4f  ||
+            Vector3.Distance(cam.gameObject.transform.position, targetObject.gameObject.transform.position) > player.Controller.ObjectInteraction.maxCheckDistance + 1.0f  ||
             Vector3.Dot(player.transform.forward, targetObject.gameObject.transform.position - player.transform.position) < 0f)
         {
             // 시간 다되거나, 플레이어와 거리 멀어거나, 플레이어가 바라보는 쪽이 아니라면 자동으로 꺼지기
