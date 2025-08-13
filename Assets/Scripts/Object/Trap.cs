@@ -43,29 +43,38 @@ public class Trap : MonoBehaviour
         if (triggerTimer < triggerTime) return;
         //Debug.Log($"{triggerTimer} -> 트리거");
         triggerTimer = 0f;
+
+        // 플레이어 무브 뜯어 고쳐서, 아래 방식이면 충분함
+        Vector3 dir = Vector3.right + Vector3.up;
+        hit.rigidbody?.AddForce(dir * 10f, ForceMode.VelocityChange);
+
         /*Vector3 starTrigerPos = hit.transform.position;
         starTrigerPos.y += 0.1f; // 살짝 띄워서 출발, 바닥에 붙어 있으면 제대로 AddForce 안됨
         hit.transform.position = starTrigerPos;
         hit.rigidbody?.AddForce(hit.transform.forward * 15f + Vector3.up * 10f, ForceMode.VelocityChange);*/
-        StartCoroutine(AddForceNextFrame(hit));
+        //StartCoroutine(AddForceNextFrame(hit));
+
     }
     IEnumerator AddForceNextFrame(RaycastHit hit)
     {
-        Vector3 starTrigerPos = hit.transform.position;
-        starTrigerPos.y += 1.1f; // 살짝 띄워서 출발, 바닥에 붙어 있으면 제대로 AddForce 안됨
-        //hit.rigidbody.useGravity = false;
-        //hit.rigidbody.velocity = Vector3.up / Time.fixedDeltaTime;
+        /*Vector3 starTrigerPos = hit.transform.position;
+        starTrigerPos.y += 0.1f; // 살짝 띄워서 출발, 바닥에 붙어 있으면 제대로 AddForce 안됨*/
+        hit.rigidbody.useGravity = false;
+        hit.rigidbody.velocity = Vector3.up / Time.fixedDeltaTime;
         //hit.transform.position = starTrigerPos;
 
         yield return new WaitForFixedUpdate();
         //yield return new WaitForSeconds(0.1f);
         hit.rigidbody.useGravity = true;
         hit.rigidbody.velocity = Vector3.zero;
+
+        Vector3 dir = Vector3.right + Vector3.up;
+        hit.rigidbody?.AddForce(dir * 10f, ForceMode.VelocityChange);
+
         //hit.rigidbody?.AddForce(hit.transform.forward * 15f + Vector3.up * 10f, ForceMode.VelocityChange);
         //hit.rigidbody?.AddForce(Vector3.forward * 15f + Vector3.up * 10f, ForceMode.VelocityChange);
         //Debug.Log(hit.transform.forward);
         //Vector3 dir = hit.transform.forward + Vector3.up;
-        Vector3 dir = Vector3.right + Vector3.up;
-        hit.rigidbody?.AddForce(dir * 10f, ForceMode.VelocityChange);
+
     }
 }

@@ -38,9 +38,10 @@ public class Climb : MonoBehaviour
                 Color.green, 1.0f);
             //Debug.Log("벽 위로 점프");
 
+            FinishClimb();
+
             // 플레이어 위치에는 벽이 있고 위쪽에 벽이 없다면 점프하여 벽 위로 올라가기
             playerRb.AddForce((playerTransform.up + playerTransform.forward) * col.height * climbJumpPower, foreMode);
-            FinishClimb();
         }
         else
         {
