@@ -10,8 +10,7 @@ public class Object : MonoBehaviour
     protected ObjectUI objectUI = null;
     public ObjectUI ObjectUI { get { return objectUI; } }
 
-
-    private void Start()
+    protected virtual void Start()
     {
         objectUI = UIManager.Instance.AddObjectUI(objectData, this);
     }

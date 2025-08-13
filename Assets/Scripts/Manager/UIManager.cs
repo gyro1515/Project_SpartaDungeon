@@ -55,8 +55,12 @@ public class UIManager : SingletonMono<UIManager>
     {
         uiInventory.Toggle();
     }
-    public void SetGainItemPanelActive(bool active)
+    public void SetInterationObjectPanelActive(bool active)
     {
-        hudUI.SetGainItemPanelActive(active);
+        hudUI.SetInterationObjectPanelActive(active);
+    }
+    public void SetInteractionObjectText(string value)
+    {
+        hudUI.SetInteractionObjectText(value);
     }
 }

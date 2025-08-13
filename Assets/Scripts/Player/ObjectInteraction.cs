@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -29,23 +30,35 @@ public class ObjectInteraction : MonoBehaviour
         checkTimer -= checkRate; // 좀 더 정확한 시간 간격이 되게끔
 
         Ray ray = _camera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
+        //Debug.DrawRay(ray.origin, ray.direction * maxCheckDistance, Color.red, 0.5f); // 레이캐스트 시각화
         RaycastHit hit;
         // 이렇게 지정도 가능 시작위치, 방향
         //Physics.Raycast(new Vector3(), Vector3.back, out hit, 1000f, layerMask);
         if (Physics.Raycast(ray, out hit, maxCheckDistance, layerMask))
         {
             // 오브젝트 패널 활성화
-            hit.collider.GetComponent<Object>()?.SetActive(true);
-
+            Object obj = hit.collider.GetComponent<Object>();
+            if(obj) obj.SetActive(true);
+            else
+            {
+                obj = hit.collider.GetComponentInParent<Object>();
+                obj?.SetActive(true);
+            }
+            //Debug.Log($"Hit: {hit.collider.name}");
             // 아이템 얻기 패널 활성화
             selectedItem = hit.collider.GetComponent<IInteractable>();
-            if (selectedItem != null) UIManager.Instance.SetGainItemPanelActive(true);
+            if (selectedItem != null)
+            {
+                UIManager.Instance.SetInterationObjectPanelActive(true);
+                selectedItem.SetInteractionText();
+            }
+            else UIManager.Instance.SetInterationObjectPanelActive(false);
         }
         else
         {
             // 아이템 얻기 패널 비활성화
             selectedItem = null;
-            UIManager.Instance.SetGainItemPanelActive(false);
+            UIManager.Instance.SetInterationObjectPanelActive(false);
         }
     }
 

@@ -23,7 +23,7 @@ public class PlayerStateController : MonoBehaviour, IDamagable
     private void Update()
     {
         ConditionPassive(); // 플레이어 상태 지속적 변화
-
+        Dash(); // 대쉬 처리
         // 테스트 용도
         if (Input.GetKeyDown(KeyCode.F)) TakeDamage(10);
     }
@@ -41,6 +41,11 @@ public class PlayerStateController : MonoBehaviour, IDamagable
         UIManager.Instance.SetHungerBar(player.GetCurHungerRatio());
         player.CurStemina += player.SteminaPassive * Time.deltaTime; // 스테미나 증가
         UIManager.Instance.SetSteminaBar(player.GetCurSteminaRatio());
+    }
+    void Dash()
+    {
+        if(!player.IsDashing) return; // 대쉬 중이 아니면 종료
+        AddStemina(-player.DashStemina * Time.deltaTime); // 대쉬 중 스테미나 감소
     }
     public void ApplyConsumable(ItemData itemData)
     {

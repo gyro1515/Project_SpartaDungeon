@@ -7,7 +7,8 @@ public class Player : BaseCharacter
 {
     [Header("플레이어 설정")]
     [SerializeField] float jumpPower = 80f;
-    [SerializeField] float jumpStemina = 20f;
+    [SerializeField] float jumpStemina = 10f;
+    [SerializeField] float dashStemina = 10f;
     [SerializeField] float maxHunger = 100f;
     [SerializeField] float hungerPassive = 3f;
     [SerializeField] float maxStemina = 100f;
@@ -15,6 +16,7 @@ public class Player : BaseCharacter
     [SerializeField] Transform dropPosition;
 
     public float JumpStemina { get { return jumpStemina; } }
+    public float DashStemina { get { return dashStemina; } }
     float curHunger = 0f;
     public float CurHunger { get { return curHunger; } set { curHunger = Mathf.Clamp(value, 0f, maxHunger); } }
     public float MaxHunger { get { return maxHunger; } }
@@ -26,6 +28,15 @@ public class Player : BaseCharacter
     // 무적
     bool isInvincible = false;
     public bool IsInvincible { get { return isInvincible; } set { isInvincible = value; } }
+    // 대쉬 여부
+    bool isDashing = false;
+    public bool IsDashing { get { return isDashing; } set { isDashing = value; } }
+    // 1인칭 여부
+    bool isFirstPerson = true;
+    public bool IsFirstPerson { get { return isFirstPerson; } set { isFirstPerson = value; } }
+    // 벽타기 여부
+    bool isClimbing = false;
+    public bool IsClimbing { get { return isClimbing; } set { isClimbing = value; } }
     // 드롭 위치
     public Transform DropPosition { get { return dropPosition; } }
     public float JumpPower { get { return jumpPower; } set { jumpPower = value; } }
