@@ -17,4 +17,8 @@ public class ItemObject : Object, IInteractable
         Destroy(objectUI.gameObject); // 아이템 오브젝트 UI 삭제
         Destroy(gameObject);
     }
+    public void SetInteractionText()
+    {
+        UIManager.Instance.SetInteractionObjectText("아이템 획득하기");
+    }
 }

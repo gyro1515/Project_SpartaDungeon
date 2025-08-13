@@ -2,15 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CampFire : MonoBehaviour
+public class CampFire : Object
 {
     public int damage;
     public float damageRate;
 
     private List<IDamagable> things = new List<IDamagable>();
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         // 유니티 공식문서 통해 매개변수 역할 확인해보기
         // 링크(여기 클릭)
         InvokeRepeating("DealDamage", 0, damageRate);

@@ -8,7 +8,7 @@ public class ObjectUI : MonoBehaviour
     [Header("오브젝트UI")]
     [SerializeField] TextMeshProUGUI nameText;
     [SerializeField] TextMeshProUGUI descriptionText;
-    [SerializeField] const float activeTime = 3.0f; // 활성화 시간
+    [SerializeField] float activeTime = 1.0f; // 활성화 시간
     [SerializeField] RectTransform rectTransform;
     bool isActive = false;
     float activeTimer = 0f;

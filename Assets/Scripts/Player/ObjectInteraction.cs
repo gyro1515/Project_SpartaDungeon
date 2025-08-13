@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -40,19 +41,24 @@ public class ObjectInteraction : MonoBehaviour
             if(obj) obj.SetActive(true);
             else
             {
-                hit.collider.GetComponentInParent<Object>()?.SetActive(true);
+                obj = hit.collider.GetComponentInParent<Object>();
+                obj?.SetActive(true);
             }
             //Debug.Log($"Hit: {hit.collider.name}");
             // 아이템 얻기 패널 활성화
             selectedItem = hit.collider.GetComponent<IInteractable>();
-            if (selectedItem != null) UIManager.Instance.SetGainItemPanelActive(true);
-            else UIManager.Instance.SetGainItemPanelActive(false);
+            if (selectedItem != null)
+            {
+                UIManager.Instance.SetInterationObjectPanelActive(true);
+                selectedItem.SetInteractionText();
+            }
+            else UIManager.Instance.SetInterationObjectPanelActive(false);
         }
         else
         {
             // 아이템 얻기 패널 비활성화
             selectedItem = null;
-            UIManager.Instance.SetGainItemPanelActive(false);
+            UIManager.Instance.SetInterationObjectPanelActive(false);
         }
     }
 

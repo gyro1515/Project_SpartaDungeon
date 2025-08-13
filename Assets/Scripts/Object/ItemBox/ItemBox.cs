@@ -10,6 +10,7 @@ public class ItemBox : Object
     private static readonly int CloseBox = Animator.StringToHash("Close");
     Animator animator;
     bool isOpen = false;
+    public bool IsOpen { get { return isOpen; } }
     private void Awake()
     {
         animator = GetComponent<Animator>();

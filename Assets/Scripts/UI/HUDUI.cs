@@ -9,18 +9,19 @@ public class HUDUI : MonoBehaviour
     [SerializeField] Image hpBar;
     [SerializeField] Image hungerBar;
     [SerializeField] Image steminaBar;
-    [SerializeField] GameObject GainItemPanel;
-
-    /*private void Awake()
+    [SerializeField] GameObject InterationObjectPanel;
+    InteractionObjectUI interactionObjectUI;
+    private void Awake()
     {
-        
+        interactionObjectUI = InterationObjectPanel.GetComponent<InteractionObjectUI>();
+
         // 굳이 이렇게 찾아야 할까...?
         //hpBar = transform.Find("HpBar")?.GetComponent<Image>();
     }
-    private void Start()
-    {
-        UIManager.Instance.HUDUI = this;
-    }*/
+    //private void Start()
+    //{
+    //    UIManager.Instance.HUDUI = this;
+    //}
     public void SetHpBar(float value)
     {
         if (hpBar) hpBar.fillAmount = value;
@@ -33,8 +34,13 @@ public class HUDUI : MonoBehaviour
     {
         if (steminaBar) steminaBar.fillAmount = value;
     }
-    public void SetGainItemPanelActive(bool active)
+    public void SetInterationObjectPanelActive(bool active)
     {
-        GainItemPanel?.SetActive(active);
+        InterationObjectPanel?.SetActive(active);
+    }
+    public void SetInteractionObjectText(string value)
+    {
+        //Debug.Log("HudUI");
+        interactionObjectUI?.SetText(value);
     }
 }

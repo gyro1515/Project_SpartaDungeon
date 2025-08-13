@@ -1452,7 +1452,7 @@ MonoBehaviour:
   hpBar: {fileID: 237749282}
   hungerBar: {fileID: 335212186}
   steminaBar: {fileID: 1535238545}
-  GainItemPanel: {fileID: 1470555002}
+  InterationObjectPanel: {fileID: 1470555002}
 --- !u!1 &997660095
 GameObject:
   m_ObjectHideFlags: 0
@@ -2138,10 +2138,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1470555003}
+  - component: {fileID: 1470555006}
   - component: {fileID: 1470555005}
   - component: {fileID: 1470555004}
   m_Layer: 5
-  m_Name: GainItem
+  m_Name: InterationWithObjectPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2165,7 +2166,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
   m_AnchoredPosition: {x: -180, y: 0}
-  m_SizeDelta: {x: 350, y: 50}
+  m_SizeDelta: {x: 350, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1470555004
 MonoBehaviour:
@@ -2205,6 +2206,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1470555002}
   m_CullTransparentMesh: 1
+--- !u!114 &1470555006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1470555002}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f24d7830899559e43ba89a029bebf323, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactionText: {fileID: 2125314923}
 --- !u!1 &1535238543
 GameObject:
   m_ObjectHideFlags: 0
@@ -3179,7 +3193,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -0.000061035156, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2125314923
@@ -3202,7 +3216,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "[E] \uC544\uC774\uD15C \uD68D\uB4DD\uD558\uAE30"
+  m_text: '[E]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: a038d2d1b4d4e4243a3b297a8d740411, type: 2}
   m_sharedMaterial: {fileID: 3962158058987712004, guid: a038d2d1b4d4e4243a3b297a8d740411, type: 2}
@@ -3444,7 +3458,7 @@ GameObject:
   - component: {fileID: 501295248138759752}
   - component: {fileID: 501295248136499334}
   - component: {fileID: 501295248138759751}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: CampFire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3484,6 +3498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 722d4266c6525574f87ab102ceff491b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  objectData: {fileID: 11400000, guid: f05ee56c71762d74cba91e688864a6ee, type: 2}
   damage: 5
   damageRate: 0.7
 --- !u!4 &501295248729003728
@@ -8323,7 +8338,7 @@ GameObject:
   - component: {fileID: 501295248729003729}
   - component: {fileID: 501295248729003730}
   - component: {fileID: 4134586633671242252}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}

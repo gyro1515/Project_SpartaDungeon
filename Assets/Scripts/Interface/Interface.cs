@@ -24,5 +24,6 @@ public interface IAttackable
 
 public interface IInteractable
 {
+    public void SetInteractionText(); // 인터랙션 텍스트 설정
     public void OnInteract();
 }
