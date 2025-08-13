@@ -120,7 +120,7 @@ void OnMove(InputAction.CallbackContext context)
 void OnMoveStop()
 {
     curMovementInput = Vector3.zero;
-    _rigidbody.velocity = Vector3.zero;
+    _rigidbody.velocity = new Vector3(0f, _rigidbody.velocity.y, 0f)
 }
 ```
 
