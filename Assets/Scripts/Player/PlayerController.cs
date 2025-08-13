@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
+using static UnityEditor.Timeline.TimelinePlaybackControls;
 
 public class PlayerController : BaseController, IJumpable
 {
@@ -67,6 +68,7 @@ public class PlayerController : BaseController, IJumpable
         // 점프 체크용 포지션, 캡슐 콜라이더는 아래가 둥글기 때문에 경사가 있는 길도 올라 갈수 있다.
         // 따라서 점프하고 착지한 바닥이 플레이어 위치 바로 아래가 아닐 가능성이 있기때문에 jumpCheckPos로 보정을 했다.
         // -> 캡슐 콜라이더 아래 둥근 부분에 Terrain에 해당하는 무언가가 충돌한다면 착지로 전환 -> IsJump = false;
+        IsJump = true; // 처음은 공중 소환
         jumpCheckPos = Vector3.down * (col.height / 2 - col.radius );
 
         playerInput = GetComponent<PlayerInput>();
@@ -107,6 +109,7 @@ public class PlayerController : BaseController, IJumpable
     }
     private void FixedUpdate()
     {
+        //if(MoveStop()) return;
         Move();
     }
     private void LateUpdate()
@@ -124,12 +127,16 @@ public class PlayerController : BaseController, IJumpable
 
         // 외부 물체와 충돌한다면 정지
         _rigidbody.velocity = Vector3.zero;
-        Debug.Log("zero");
+        //Debug.Log($"Stop {collision.gameObject.name}");
 
     }
     private void OnCollisionStay(Collision collision)
     {
         CheckLanding(collision);
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        IsJump = true;// 어떤 물체에서 빠져나온다면
     }
     void CameraLook()
     {
@@ -147,17 +154,19 @@ public class PlayerController : BaseController, IJumpable
     void OnMove(InputAction.CallbackContext context)
     {
         curMovementInput = context.ReadValue<Vector3>();
-        if (curMovementInput.magnitude <= 0.002f)
-        {
-            // 입력 없다면 정지
-            OnMoveStop(context);
-        }
+        MoveStop();
+
     }
-    void OnMoveStop(InputAction.CallbackContext context)
+    bool MoveStop()
     {
-        //Debug.Log("OnMoveStop");
+        if (curMovementInput.magnitude > 0.002f) return false;
+
+        
+
+        Debug.Log("MoveStop");
         curMovementInput = Vector3.zero;
-        _rigidbody.velocity = Vector3.zero;
+        _rigidbody.velocity = new Vector3(0f, _rigidbody.velocity.y, 0f);
+        return true;
     }
     void OnLook(InputAction.CallbackContext context)
     {
@@ -219,7 +228,7 @@ public class PlayerController : BaseController, IJumpable
             dir = transform.up * curMovementInput.z + transform.right * curMovementInput.x; // forward 대신 up을 사용하여 벽타기 시 위쪽으로 이동
             dir = dir.normalized;
             //float climbRunSpeed = playerSpeed / player.RunSpeed * climb.ClimbSpeed;
-            float climbRunSpeed = player.WalkSpeed / player.RunSpeed * climb.ClimbSpeed;
+            float climbRunSpeed = player.RunSpeed / player.WalkSpeed * climb.ClimbSpeed;
             dir *= player.IsDashing ? climbRunSpeed : climb.ClimbSpeed;
             //dir *= climbRunSpeed;
             velocityChange = dir - _rigidbody.velocity;

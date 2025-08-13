@@ -46,6 +46,7 @@ public class Trap : MonoBehaviour
 
         // 플레이어 무브 뜯어 고쳐서, 아래 방식이면 충분함
         Vector3 dir = Vector3.right + Vector3.up;
+        hit.collider.gameObject.GetComponent<PlayerController>().IsJump = true;
         hit.rigidbody?.AddForce(dir * 10f, ForceMode.VelocityChange);
 
         /*Vector3 starTrigerPos = hit.transform.position;

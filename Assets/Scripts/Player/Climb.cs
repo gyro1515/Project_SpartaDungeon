@@ -76,6 +76,7 @@ public class Climb : MonoBehaviour
     void FinishClimb()
     {
         player.IsClimbing = false; // 벽타기 상태 해제
+        player.Controller.IsJump = true;
         playerRb.useGravity = true; // 중력 활성화
         playerRb.velocity = Vector3.zero;
         // 바라보는 방향으로 플레이어 회전
