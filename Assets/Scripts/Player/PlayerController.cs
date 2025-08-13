@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
@@ -114,6 +115,12 @@ public class PlayerController : BaseController, IJumpable
     private void OnCollisionEnter(Collision collision)
     {
         CheckLanding(collision);
+        // 외부 힘이 가해졌을 때 다른 물체와 충돌한다면
+        if(IsExternalForceActive())
+        {
+            _rigidbody.velocity = Vector3.zero;
+        }
+
     }
     private void OnCollisionStay(Collision collision)
     {
@@ -193,20 +200,70 @@ public class PlayerController : BaseController, IJumpable
     }
     void Move()
     {
+
+        if (curMovementInput.magnitude <= 0.001f) // 입력 값이 없다면
+        {
+            float horizontalSpeed = _rigidbody.velocity.magnitude;
+
+            if (horizontalSpeed <= 0.002f)
+            {
+                _rigidbody.velocity = Vector3.zero;
+                Debug.Log($"Stop {horizontalSpeed}");
+                return; // 이동하고 있지 않다면 리턴
+            }
+            Debug.Log($"Run {horizontalSpeed}");
+
+            float playerSpeed = player.IsDashing ? player.RunSpeed : player.WalkSpeed;
+            // 플레이어 움직임이 playerSpeed보다 크다면 외부힘이 작용한다는 뜻
+            // 따라서 멈추기 x
+            if (horizontalSpeed > playerSpeed + 0.1f) return; 
+
+            // 보간하여 멈추기
+            if (player.IsClimbing)
+            {
+                Vector3 horizontalVel = _rigidbody.velocity;
+                horizontalVel = Vector3.Lerp(horizontalVel, Vector3.zero, 0.5f);
+                _rigidbody.velocity = horizontalVel;
+            }
+            else
+            {
+                Vector3 horizontalVel = new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
+                //Debug.Log(horizontalVel);
+                horizontalVel = Vector3.Lerp(horizontalVel, Vector3.zero, 0.5f);
+                _rigidbody.velocity = new Vector3(horizontalVel.x, _rigidbody.velocity.y, horizontalVel.z);
+            }
+            
+            return;
+        }
         Vector3 dir = Vector3.zero; // 초기화
+        Vector3 velocityChange = Vector3.zero;
         if (player.IsClimbing)
         {
             dir = transform.up * curMovementInput.z + transform.right * curMovementInput.x; // forward 대신 up을 사용하여 벽타기 시 위쪽으로 이동
+            dir = dir.normalized;
             float climbRunSpeed = player.RunSpeed / player.WalkSpeed * climb.ClimbSpeed;
             dir *= player.IsDashing ? climbRunSpeed : climb.ClimbSpeed;
+            velocityChange = dir - _rigidbody.velocity;
+
         }
         else
         {
             dir = transform.forward * curMovementInput.z + transform.right * curMovementInput.x; // 실제 축처럼 z가 앞을 향하도록
+            dir = dir.normalized;
             dir *= player.IsDashing ? player.RunSpeed : player.WalkSpeed;
-            dir.y = _rigidbody.velocity.y;  // y값은 velocity(변화량)의 y 값을 넣어준다.
+            velocityChange = dir - new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
+
+            //dir.y = _rigidbody.velocity.y;  // y값은 velocity(변화량)의 y 값을 넣어준다.
+            // 왜 x z값만 있는데, 정규화하면 y값이 생길까? -> 위에서 넣어줬다.
+            //dir.y = 0;
         }
-        _rigidbody.velocity = dir;
+
+        //_rigidbody.velocity = dir;
+
+        //velocityChange = dir - new Vector3(_rigidbody.velocity.x, 0, _rigidbody.velocity.z);
+        _rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
+
+        //Debug.Log($"{velocityChange}, {velocityChange.magnitude} dir: {dir} / {dir.magnitude}");
     }
 
     public void StartJump() // IJumpable 상속
@@ -251,5 +308,14 @@ public class PlayerController : BaseController, IJumpable
                 return;
             }
         }
+    }
+    bool IsExternalForceActive()
+    {
+        float horizontalSpeed = _rigidbody.velocity.magnitude;
+        float playerSpeed = player.IsDashing ? player.RunSpeed : player.WalkSpeed;
+        // 플레이어 움직임이 playerSpeed보다 크다면 외부힘이 작용한다는 뜻
+        if (horizontalSpeed > playerSpeed + 0.1f) return true;
+
+        return false;
     }
 }
