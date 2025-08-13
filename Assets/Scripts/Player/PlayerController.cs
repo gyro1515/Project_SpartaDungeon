@@ -116,12 +116,8 @@ public class PlayerController : BaseController, IJumpable
         Move();
         if (_rigidbody.velocity.magnitude <= 0.002f)
         {
-            //curMovementInput = Vector2.zero;
-            Debug.Log("슬립 스탑");
+            //Debug.Log("슬립 스탑");
             _rigidbody.velocity = player.IsClimbing ? Vector3.zero : new Vector3(0f, _rigidbody.velocity.y, 0f);
-            //_rigidbody.velocity = new Vector3(0f, _rigidbody.velocity.y, 0f);
-            //Debug.Log("UpdateStop");
-            //return;
         }
     }
     private void LateUpdate()
@@ -166,23 +162,15 @@ public class PlayerController : BaseController, IJumpable
     void OnMove(InputAction.CallbackContext context)
     {
         curMovementInput = context.ReadValue<Vector2>();
-        //Debug.Log(curMovementInput);
-        //MoveStop();
-        //MoveStop();
-        /*if (context.phase == InputActionPhase.Canceled)
-        {
-            OnMoveStop(context);
-        }*/
     }
     void OnMoveStop(InputAction.CallbackContext context)
     {
         //Debug.Log("OnMoveStop");
         curMovementInput = Vector2.zero;
-        //_rigidbody.velocity = new Vector3(0f, _rigidbody.velocity.y, 0f);
         _rigidbody.velocity = player.IsClimbing ? Vector3.zero : new Vector3(0f, _rigidbody.velocity.y, 0f);
 
     }
-    bool MoveStop()
+    /*bool MoveStop()
     {
         if (curMovementInput.magnitude > 0.002f) return false;
 
@@ -190,7 +178,7 @@ public class PlayerController : BaseController, IJumpable
         curMovementInput = Vector2.zero;
         _rigidbody.velocity = new Vector3(0f, _rigidbody.velocity.y, 0f);
         return true;
-    }
+    }*/
     void OnLook(InputAction.CallbackContext context)
     {
         mouseDelta = context.ReadValue<Vector2>();
@@ -241,10 +229,10 @@ public class PlayerController : BaseController, IJumpable
     }
     void Move()
     {
-        Debug.Log(curMovementInput);
+        //Debug.Log(curMovementInput);
         if (curMovementInput == Vector2.zero) return; // 입력 없으면 작동 안하도록
 
-        Debug.Log("Input");
+        //Debug.Log("Input");
         Vector3 dir = Vector3.zero; // 초기화
         Vector3 velocityChange = Vector3.zero;
         if (player.IsClimbing)
