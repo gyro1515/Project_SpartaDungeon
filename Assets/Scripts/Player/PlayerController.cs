@@ -17,7 +17,7 @@ public class PlayerController : BaseController, IJumpable
     [SerializeField] float lookSensitivity; // 카메라 민감도
 
     float camCurXRot; // 현재 카메라 x축(피치) 회전 값
-    private Vector3 curMovementInput;  // 현재 입력 값 -> 게임 축과 똑같게 Vector3로 바꿈
+    private Vector2 curMovementInput;  // 현재 입력 값 -> 게임 축과 똑같게 Vector3로 바꿈
     private Vector2 mouseDelta;  // 마우스 변화
     bool canLook = true; // 인벤토리 온/오프 시 카메라 회전 용도
     Camera cam;
@@ -75,7 +75,9 @@ public class PlayerController : BaseController, IJumpable
         mainActionMap = playerInput.actions.FindActionMap("Player");
         moveAction = mainActionMap.FindAction("Move");
         moveAction.performed += OnMove; // 해당 키가 작동 중이라면
-        //moveAction.canceled += OnMoveStop; // 이건 필요 없음
+        //moveAction.started += OnMove; // 해당 키가 작동 중이라면
+        moveAction.canceled += OnMoveStop; // 이건 필요 없음
+        moveAction.Enable();
         LookAction = mainActionMap.FindAction("Look");
         LookAction.performed += OnLook;
         LookAction.canceled += OnLookStop;
@@ -110,7 +112,17 @@ public class PlayerController : BaseController, IJumpable
     private void FixedUpdate()
     {
         //if(MoveStop()) return;
+        
         Move();
+        /*if (_rigidbody.velocity.magnitude <= 0.002f)
+        {
+            curMovementInput = Vector2.zero;
+
+            //_rigidbody.velocity = player.IsClimbing ? Vector3.zero : new Vector3(0f, _rigidbody.velocity.y, 0f);
+            _rigidbody.velocity = new Vector3(0f, _rigidbody.velocity.y, 0f);
+            //Debug.Log("UpdateStop");
+            //return;
+        }*/
     }
     private void LateUpdate()
     {
@@ -153,18 +165,29 @@ public class PlayerController : BaseController, IJumpable
     }
     void OnMove(InputAction.CallbackContext context)
     {
-        curMovementInput = context.ReadValue<Vector3>();
-        MoveStop();
+        curMovementInput = context.ReadValue<Vector2>();
+        //Debug.Log(curMovementInput);
+        //MoveStop();
+        //MoveStop();
+        /*if (context.phase == InputActionPhase.Canceled)
+        {
+            OnMoveStop(context);
+        }*/
+    }
+    void OnMoveStop(InputAction.CallbackContext context)
+    {
+        //Debug.Log("OnMoveStop");
+        curMovementInput = Vector2.zero;
+        //_rigidbody.velocity = new Vector3(0f, _rigidbody.velocity.y, 0f);
+        _rigidbody.velocity = player.IsClimbing ? Vector3.zero : new Vector3(0f, _rigidbody.velocity.y, 0f);
 
     }
     bool MoveStop()
     {
         if (curMovementInput.magnitude > 0.002f) return false;
 
-        
-
         Debug.Log("MoveStop");
-        curMovementInput = Vector3.zero;
+        curMovementInput = Vector2.zero;
         _rigidbody.velocity = new Vector3(0f, _rigidbody.velocity.y, 0f);
         return true;
     }
@@ -218,14 +241,15 @@ public class PlayerController : BaseController, IJumpable
     }
     void Move()
     {
-        if (curMovementInput == Vector3.zero) return; // 입력 없으면 작동 안하도록
+        Debug.Log(curMovementInput);
+        if (curMovementInput == Vector2.zero) return; // 입력 없으면 작동 안하도록
 
-        //Debug.Log("Input");
+        Debug.Log("Input");
         Vector3 dir = Vector3.zero; // 초기화
         Vector3 velocityChange = Vector3.zero;
         if (player.IsClimbing)
         {
-            dir = transform.up * curMovementInput.z + transform.right * curMovementInput.x; // forward 대신 up을 사용하여 벽타기 시 위쪽으로 이동
+            dir = transform.up * curMovementInput.y + transform.right * curMovementInput.x; // forward 대신 up을 사용하여 벽타기 시 위쪽으로 이동
             dir = dir.normalized;
             //float climbRunSpeed = playerSpeed / player.RunSpeed * climb.ClimbSpeed;
             float climbRunSpeed = player.RunSpeed / player.WalkSpeed * climb.ClimbSpeed;
@@ -235,7 +259,7 @@ public class PlayerController : BaseController, IJumpable
         }
         else
         {
-            dir = transform.forward * curMovementInput.z + transform.right * curMovementInput.x; // 실제 축처럼 z가 앞을 향하도록
+            dir = transform.forward * curMovementInput.y + transform.right * curMovementInput.x;
             dir = dir.normalized;
             dir *= player.IsDashing ? player.RunSpeed : player.WalkSpeed;
             //dir *= playerSpeed;
@@ -292,6 +316,7 @@ public class PlayerController : BaseController, IJumpable
             {
                 //Debug.Log($"{Vector3.Dot(chekV, Vector3.down)} / {Vector3.Distance(contact.point, transform.position + jumpCheckPos)}");
                 //Debug.DrawLine(gameObject.transform.position + jumpCheckPos, contact.point, Color.red, 1.0f);
+                
                 EndJump();
                 return;
             }
