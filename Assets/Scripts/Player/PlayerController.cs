@@ -114,15 +114,15 @@ public class PlayerController : BaseController, IJumpable
         //if(MoveStop()) return;
         
         Move();
-        /*if (_rigidbody.velocity.magnitude <= 0.002f)
+        if (_rigidbody.velocity.magnitude <= 0.002f)
         {
-            curMovementInput = Vector2.zero;
-
-            //_rigidbody.velocity = player.IsClimbing ? Vector3.zero : new Vector3(0f, _rigidbody.velocity.y, 0f);
-            _rigidbody.velocity = new Vector3(0f, _rigidbody.velocity.y, 0f);
+            //curMovementInput = Vector2.zero;
+            Debug.Log("슬립 스탑");
+            _rigidbody.velocity = player.IsClimbing ? Vector3.zero : new Vector3(0f, _rigidbody.velocity.y, 0f);
+            //_rigidbody.velocity = new Vector3(0f, _rigidbody.velocity.y, 0f);
             //Debug.Log("UpdateStop");
             //return;
-        }*/
+        }
     }
     private void LateUpdate()
     {
