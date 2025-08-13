@@ -28,9 +28,10 @@
 ### 2. 플레이어 상태바 UI
 - 체력, 스태미나, 버프 지속시간 등 실시간 UI 표시
 
-### 3. 동적 환경 조사
+### 3. 동적 환경 조사 - 상호작용 가능한 오브젝트 표시
 - **Raycast**로 플레이어 시선 방향에 있는 오브젝트 탐지
 - UI에 오브젝트 이름, 설명 등 표시
+- 상호작용 가능한 오브젝트에 마우스를 올리면 해당 오브젝트에 상호작용 가능 UI 표시
 
 ### 4. 점프대
 - 밟으면 캐릭터가 위로 높게 튀어 오르는 기믹 구현
@@ -51,7 +52,7 @@
 - 플레이어가 자연스럽게 따라가도록 물리 처리
 
 ### 9. 벽 타기 및 매달리기
-- 수직 표면을 오르거나 매달리는 액션 구현
+- 벽을 오르거나 매달리는 액션 구현
 
 ### 10. 레이저 트랩 (플랫폼 발사기)
 - Raycast로 특정 구간 감시
@@ -59,26 +60,28 @@
 
 ---
 
-## 🛠️ 트러블 슈팅 - 플레이어에 AddForce하기
+## 🛠️ 트러블 슈팅 - 플레이어에 AddForce 적용
 
 ### 문제 상황
 - 플레이어에게 AddForce시, **X, Z 축 방향 힘이 적용되지 않는** 문제가 발생했습니다. 
 - 플레이어 이동을 `Rigidbody.velocity`로 제어하는 바람에 생긴 문제였습니다.
-- 매 프레임에서 플레이어 이동 입력 시, velocity를 직접 수정하기 때문에 외부 힘이 무시되는 현상이었습니다.
+- 매 프레임 이동 입력 시, velocity를 직접 수정하기 때문에 외부 힘이 무시되는 현상이었습니다.
 
 ### 해결 방법
-- 입력이 있을 때만 `AddForce`로 이동 처리하여 Rigidbody.velocity를 직접 초기화하여 건드리는 기존의 방법을 변경했습니다.
-- 입력이 없을 땐 `OnMoveStop()`으로 이동을 강제로 멈추도록 구현하여 미끄러짐을 방지했습니다.
-- 플레이어 벽에서 미끄러지지 않아서, 플레이어에 Physic material을 설정해 마찰을 0으로 설정했기 때문에 강제로 플레이어가 멈춰야 하는 코드가 필요했기 때문입니다.
+- 기존의 이동 제어 방식을 변경하여, 입력이 있을 때만 `AddForce`로 이동을 처리했습니다.
+- 입력이 없으면 `OnMoveStop()`으로 강제로 이동을 멈추도록 구현했습니다.
+- 벽에서 자연스럽게 떨어지지 않는 문제를 해결하기 위해 Physic Material의 마찰을 **0**으로 설정했습니다.  
+  이로 인해 미끄러짐을 방지하기 위해 강제 정지 로직이 필요했습니다.
 
 ```csharp
+// FixedUpdate()부분
 void Move()
 {
     if (curMovementInput == Vector3.zero) return; // 입력 없으면 작동 안하도록
 
     Vector3 dir = Vector3.zero;
     Vector3 velocityChange = Vector3.zero;
-
+    // 플레이어 상태에 따라 이동 방향과 속도 변경
     if (player.IsClimbing)
     {
         dir = transform.up * curMovementInput.z + transform.right * curMovementInput.x;
@@ -101,6 +104,14 @@ void Move()
     _rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
 }
 
+// 인풋액션 부분
+void OnMove(InputAction.CallbackContext context)
+{
+    curMovementInput = context.ReadValue<Vector3>();
+    if (curMovementInput.magnitude > 0.002f) return;
+    // 입력 없다면 정지
+    OnMoveStop();
+}
 void OnMoveStop()
 {
     curMovementInput = Vector3.zero;
